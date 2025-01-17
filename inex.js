@@ -89,12 +89,18 @@ function saveScore(newScore) {
 function updateScoreboard() {
   scoreListElement.innerHTML = ""; // Limpiar la lista actual
 
-  // Añadir las 10 mejores puntuaciones
-  highScores.forEach((score, index) => {
-    const listItem = document.createElement("li");
-    listItem.textContent = `${index + 1}. ${score}`;
-    scoreListElement.appendChild(listItem);
-  });
+  // Si hay puntuaciones en el array, las mostramos
+  if (highScores.length > 0) {
+    highScores.forEach((score, index) => {
+      const listItem = document.createElement("li");
+      listItem.textContent = `${index + 1}. ${score}`;
+      scoreListElement.appendChild(listItem);
+    });
+  } else {
+    const noScoresItem = document.createElement("li");
+    noScoresItem.textContent = "No hay puntuaciones aún.";
+    scoreListElement.appendChild(noScoresItem);
+  }
 }
 
 // Reiniciar el juego
