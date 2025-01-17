@@ -76,7 +76,7 @@ function saveScore(newScore) {
 
   // Ordenar las puntuaciones de mayor a menor y mantener solo las 10 mejores
   highScores.sort((a, b) => b - a);
-  highScores = highScores.slice(0, 10);
+  highScores = highScores.slice(0, 5);
 
   // Guardar las puntuaciones en localStorage
   localStorage.setItem("highScores", JSON.stringify(highScores));
