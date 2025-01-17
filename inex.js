@@ -1,19 +1,12 @@
 const playerCar = document.getElementById("player-car");
 const gameContainer = document.querySelector(".game-container");
 const scoreElement = document.getElementById("score");
-const scoreListElement = document.getElementById("score-list");
 
 let playerX = 180; // Posición inicial del coche del jugador
 let score = 0;
 let gameSpeed = 5;
 let enemies = []; // Array para almacenar los enemigos
 let playerSpeed = 40; // Velocidad del coche (aumentada de 20 a 40 píxeles)
-
-// Array para almacenar las puntuaciones
-let highScores = JSON.parse(localStorage.getItem("highScores")) || []; // Cargar las puntuaciones desde localStorage si existen
-
-// Mostrar las puntuaciones al inicio del juego
-updateScoreboard();
 
 // Movimiento del jugador
 document.addEventListener("keydown", (event) => {
@@ -63,46 +56,22 @@ function updateEnemies() {
       enemyRect.right > playerRect.left
     ) {
       alert("¡Choque! Tu puntaje final es: " + score);
-      saveScore(score); // Guardar puntuación cuando el jugador pierde
+      saveHighScore(score); // Guardar el puntaje cuando el jugador choca
       resetGame();
     }
   });
 }
 
-// Guardar puntuación en el array y actualizar la clasificación
-function saveScore(newScore) {
-  // Añadir la puntuación al array de puntuaciones
-  highScores.push(newScore);
-
-  // Ordenar las puntuaciones de mayor a menor y mantener solo las 10 mejores
-  highScores.sort((a, b) => b - a);
-  highScores = highScores.slice(0, 5);
-
-  // Guardar las puntuaciones en localStorage
-  localStorage.setItem("highScores", JSON.stringify(highScores));
-
-  // Actualizar el cuadro de puntuaciones
-  updateScoreboard();
-}
-
-// Actualizar la lista de puntuaciones
-function updateScoreboard() {
-  scoreListElement.innerHTML = ""; // Limpiar la lista actual
-
-  // Si hay puntuaciones en el array, las mostramos
-  if (highScores.length > 0) {
-    highScores.forEach((score, index) => {
-      const listItem = document.createElement("li");
-      listItem.textContent = `${index + 1}. ${score}`;
-      scoreListElement.appendChild(listItem);
-    });
-  } else {
-    const noScoresItem = document.createElement("li");
-    noScoresItem.textContent = "No hay puntuaciones aún.";
-    scoreListElement.appendChild(noScoresItem);
+// Guardar el puntaje más alto
+function saveHighScore(currentScore) {
+  const savedScores = JSON.parse(localStorage.getItem('highScores')) || [];
+  // Guardar solo si es una puntuación más alta
+  if (savedScores.length < 10 || currentScore > savedScores[9].score) {
+    savedScores.push({ score: currentScore });
+    savedScores.sort((a, b) => b.score - a.score); // Ordenar de mayor a menor
+    if (savedScores.length > 10) savedScores.pop(); // Mantener solo los 10 primeros
+    localStorage.setItem('highScores', JSON.stringify(savedScores));
   }
-
-  console.log("Puntuaciones actuales:", highScores); // Verificación en consola
 }
 
 // Reiniciar el juego
@@ -115,6 +84,19 @@ function resetGame() {
   gameSpeed = 5;
   scoreElement.textContent = "Puntaje: 0";
   createEnemy(); // Crear un primer enemigo
+}
+
+// Leer y mostrar las puntuaciones guardadas al cargar la página
+function displayHighScores() {
+  const savedScores = JSON.parse(localStorage.getItem('highScores')) || [];
+  const highScoresList = document.getElementById("high-scores-list");
+  highScoresList.innerHTML = ''; // Limpiar lista antes de mostrar
+
+  savedScores.forEach((scoreData, index) => {
+    const scoreItem = document.createElement("li");
+    scoreItem.textContent = `#${index + 1} - ${scoreData.score} puntos`;
+    highScoresList.appendChild(scoreItem);
+  });
 }
 
 // Bucle principal del juego
@@ -131,3 +113,6 @@ gameLoop();
 setInterval(() => {
   createEnemy(); // Crear un nuevo enemigo
 }, 10000); // 10000 milisegundos = 10 segundos
+
+// Llamar a la función displayHighScores al cargar la página
+window.onload = displayHighScores;
