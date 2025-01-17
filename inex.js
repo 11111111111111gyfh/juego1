@@ -56,22 +56,9 @@ function updateEnemies() {
       enemyRect.right > playerRect.left
     ) {
       alert("¡Choque! Tu puntaje final es: " + score);
-      saveHighScore(score); // Guardar el puntaje cuando el jugador choca
       resetGame();
     }
   });
-}
-
-// Guardar el puntaje más alto
-function saveHighScore(currentScore) {
-  const savedScores = JSON.parse(localStorage.getItem('highScores')) || [];
-  // Guardar solo si es una puntuación más alta
-  if (savedScores.length < 10 || currentScore > savedScores[9].score) {
-    savedScores.push({ score: currentScore });
-    savedScores.sort((a, b) => b.score - a.score); // Ordenar de mayor a menor
-    if (savedScores.length > 10) savedScores.pop(); // Mantener solo los 10 primeros
-    localStorage.setItem('highScores', JSON.stringify(savedScores));
-  }
 }
 
 // Reiniciar el juego
@@ -84,9 +71,18 @@ function resetGame() {
   gameSpeed = 5;
   scoreElement.textContent = "Puntaje: 0";
   createEnemy(); // Crear un primer enemigo
+
+  // Verificar y guardar la puntuación más alta en el localStorage
+  const savedScores = JSON.parse(localStorage.getItem('highScores')) || [];
+  if (savedScores.length < 10 || score > savedScores[9].score) {
+    savedScores.push({ score });
+    savedScores.sort((a, b) => b.score - a.score); // Ordenar de mayor a menor
+    if (savedScores.length > 10) savedScores.pop(); // Mantener solo los 10 primeros
+    localStorage.setItem('highScores', JSON.stringify(savedScores));
+  }
 }
 
-// Leer y mostrar las puntuaciones guardadas al cargar la página
+// Leer las puntuaciones desde el localStorage al cargar la página
 function displayHighScores() {
   const savedScores = JSON.parse(localStorage.getItem('highScores')) || [];
   const highScoresList = document.getElementById("high-scores-list");
@@ -98,6 +94,9 @@ function displayHighScores() {
     highScoresList.appendChild(scoreItem);
   });
 }
+
+// Llamar a la función displayHighScores al cargar la página
+window.onload = displayHighScores;
 
 // Bucle principal del juego
 function gameLoop() {
@@ -113,6 +112,3 @@ gameLoop();
 setInterval(() => {
   createEnemy(); // Crear un nuevo enemigo
 }, 10000); // 10000 milisegundos = 10 segundos
-
-// Llamar a la función displayHighScores al cargar la página
-window.onload = displayHighScores;
