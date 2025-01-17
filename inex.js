@@ -77,7 +77,7 @@ function resetGame() {
   if (savedScores.length < 10 || score > savedScores[9].score) {
     savedScores.push({ score });
     savedScores.sort((a, b) => b.score - a.score); // Ordenar de mayor a menor
-    if (savedScores.length > 10) savedScores.pop(); // Mantener solo los 10 primeros
+    if (savedScores.length > 5) savedScores.pop(); // Mantener solo los 10 primeros
     localStorage.setItem('highScores', JSON.stringify(savedScores));
   }
 }
