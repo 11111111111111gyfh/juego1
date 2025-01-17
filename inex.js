@@ -1,12 +1,16 @@
 const playerCar = document.getElementById("player-car");
 const gameContainer = document.querySelector(".game-container");
 const scoreElement = document.getElementById("score");
+const scoreListElement = document.getElementById("score-list");
 
 let playerX = 180; // Posición inicial del coche del jugador
 let score = 0;
 let gameSpeed = 5;
 let enemies = []; // Array para almacenar los enemigos
 let playerSpeed = 40; // Velocidad del coche (aumentada de 20 a 40 píxeles)
+
+// Array para almacenar las puntuaciones
+let highScores = [];
 
 // Movimiento del jugador
 document.addEventListener("keydown", (event) => {
@@ -56,8 +60,34 @@ function updateEnemies() {
       enemyRect.right > playerRect.left
     ) {
       alert("¡Choque! Tu puntaje final es: " + score);
+      saveScore(score); // Guardar puntuación cuando el jugador pierde
       resetGame();
     }
+  });
+}
+
+// Guardar puntuación en el array y actualizar la clasificación
+function saveScore(newScore) {
+  // Añadir la puntuación al array de puntuaciones
+  highScores.push(newScore);
+
+  // Ordenar las puntuaciones de mayor a menor y mantener solo las 10 mejores
+  highScores.sort((a, b) => b - a);
+  highScores = highScores.slice(0, 10);
+
+  // Actualizar el cuadro de puntuaciones
+  updateScoreboard();
+}
+
+// Actualizar la lista de puntuaciones
+function updateScoreboard() {
+  scoreListElement.innerHTML = ""; // Limpiar la lista actual
+
+  // Añadir las 10 mejores puntuaciones
+  highScores.forEach((score, index) => {
+    const listItem = document.createElement("li");
+    listItem.textContent = `${index + 1}. ${score}`;
+    scoreListElement.appendChild(listItem);
   });
 }
 
