@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background: #333;
+  color: white;
+  overflow: hidden;
+}
+
+.game-container {
+  position: relative;
+  width: 400px;
+  height: 600px;
+  margin: 20px auto;
+  background: #555;
+  border: 2px solid #fff;
+  overflow: hidden;
+}
+
+#player-car {
+  position: absolute;
+  bottom: 20px;
+  left: 180px;
+  width: 40px;
+  height: 70px;
+  background: red;
+  border-radius: 5px;
+}
+
+.enemy {
+  position: absolute;
+  top: -70px;
+  width: 40px;
+  height: 70px;
+  background: blue;
+  border-radius: 5px;
+}
+
+#score {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 24px;
+}
