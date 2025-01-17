@@ -101,6 +101,8 @@ function updateScoreboard() {
     noScoresItem.textContent = "No hay puntuaciones aún.";
     scoreListElement.appendChild(noScoresItem);
   }
+
+  console.log("Puntuaciones actuales:", highScores); // Verificación en consola
 }
 
 // Reiniciar el juego
