@@ -10,7 +10,10 @@ let enemies = []; // Array para almacenar los enemigos
 let playerSpeed = 40; // Velocidad del coche (aumentada de 20 a 40 píxeles)
 
 // Array para almacenar las puntuaciones
-let highScores = [];
+let highScores = JSON.parse(localStorage.getItem("highScores")) || []; // Cargar las puntuaciones desde localStorage si existen
+
+// Mostrar las puntuaciones al inicio del juego
+updateScoreboard();
 
 // Movimiento del jugador
 document.addEventListener("keydown", (event) => {
@@ -74,6 +77,9 @@ function saveScore(newScore) {
   // Ordenar las puntuaciones de mayor a menor y mantener solo las 10 mejores
   highScores.sort((a, b) => b - a);
   highScores = highScores.slice(0, 10);
+
+  // Guardar las puntuaciones en localStorage
+  localStorage.setItem("highScores", JSON.stringify(highScores));
 
   // Actualizar el cuadro de puntuaciones
   updateScoreboard();
