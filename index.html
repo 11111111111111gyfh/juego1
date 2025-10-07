@@ -90,10 +90,10 @@
         }
         document.getElementById('tamano').addEventListener('change', nuevoLaberinto);
         document.addEventListener('keydown',e=>{
-            if(e.key==='w') mover(-1,0);
-            if(e.key==='a') mover(0,-1);
-            if(e.key==='s') mover(1,0);
-            if(e.key==='d') mover(0,1);
+            if(e.key==='w' || e.key==='ArrowUp') mover(-1,0);
+            if(e.key==='a' || e.key==='ArrowLeft') mover(0,-1);
+            if(e.key==='s' || e.key==='ArrowDown') mover(1,0);
+            if(e.key==='d' || e.key==='ArrowRight') mover(0,1);
         });
         generarLaberinto();
         dibujar();
