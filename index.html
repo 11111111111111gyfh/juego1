@@ -1,25 +1,102 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Juego de Coches</title>
-  <link rel="stylesheet" href="index.css">
+    <meta charset="UTF-8">
+    <title>Juego de Laberinto</title>
+    <style>
+        body { background: #222; color: #eee; font-family: monospace; }
+        #laberinto { line-height: 1; font-size: 18px; }
+        .pared { color: #888; }
+        .camino { color: #eee; }
+        .jugador { color: #0f0; font-weight: bold; }
+        .salida { color: #f00; font-weight: bold; }
+        .inicio { color: #0ff; font-weight: bold; }
+    </style>
 </head>
 <body>
-  <div class="game-container">
-    <div id="player-car"></div>
-    <!-- Los enemigos se añadirán aquí dinámicamente -->
-  </div>
-  <h1 id="score">Puntaje: 0</h1>
-  
-  <div id="high-scores">
-    <h2>Clasificación</h2>
-    <ul id="high-scores-list">
-      <!-- Aquí se mostrarán las puntuaciones -->
-    </ul>
-  </div>
-
-  <script src="inex.js"></script>
+    <h1>Juego de Laberinto</h1>
+    <label for="tamano">Tamaño del laberinto: </label>
+    <select id="tamano">
+        <option value="pequeno">Pequeño</option>
+        <option value="mediano" selected>Mediano</option>
+        <option value="grande">Grande</option>
+    </select>
+    <pre id="laberinto"></pre>
+    <p>Usa las teclas <b>WASD</b> para moverte. Llega a la <span class="salida">E</span> para ganar.</p>
+    <script>
+        let ancho = 15, alto = 10;
+        let mapa = [], visitado = [], jugador = {y:1, x:1}, salida = {y: alto*2-1, x: ancho*2-1};
+        function crearMatriz(h, w, val) {
+            return Array.from({length: h}, () => Array(w).fill(val));
+        }
+        function setTamano(tam) {
+            if (tam === 'pequeno') { ancho = 7; alto = 5; }
+            else if (tam === 'mediano') { ancho = 15; alto = 10; }
+            else if (tam === 'grande') { ancho = 25; alto = 18; }
+        }
+        function generarLaberinto() {
+            salida = {y: alto*2-1, x: ancho*2-1};
+            jugador = {y:1, x:1};
+            mapa = crearMatriz(alto*2+1, ancho*2+1, '#');
+            visitado = crearMatriz(alto, ancho, false);
+            function dfs(x, y) {
+                visitado[y][x] = true;
+                let dirs = [[0,1],[1,0],[0,-1],[-1,0]];
+                dirs = dirs.sort(()=>Math.random()-0.5);
+                for (const [dx,dy] of dirs) {
+                    let nx = x+dx, ny = y+dy;
+                    if (nx>=0 && nx<ancho && ny>=0 && ny<alto && !visitado[ny][nx]) {
+                        mapa[y*2+1+dy][x*2+1+dx] = ' ';
+                        mapa[y*2+1+dy/2|0][x*2+1+dx/2|0] = ' ';
+                        dfs(nx,ny);
+                    }
+                }
+            }
+            for(let y=0;y<alto;y++) for(let x=0;x<ancho;x++) mapa[y*2+1][x*2+1]=' ';
+            dfs(0,0);
+            mapa[1][1]='S';
+            mapa[salida.y][salida.x]='E';
+        }
+        function dibujar() {
+            let out = '';
+            for(let y=0;y<mapa.length;y++){
+                for(let x=0;x<mapa[0].length;x++){
+                    if(jugador.y===y && jugador.x===x) out += '<span class="jugador">P</span>';
+                    else if(mapa[y][x]==='#') out += '<span class="pared">#</span>';
+                    else if(mapa[y][x]==='S') out += '<span class="inicio">S</span>';
+                    else if(mapa[y][x]==='E') out += '<span class="salida">E</span>';
+                    else out += '<span class="camino">·</span>';
+                }
+                out+='\n';
+            }
+            document.getElementById('laberinto').innerHTML = out;
+        }
+        function mover(dy,dx){
+            let ny=jugador.y+dy, nx=jugador.x+dx;
+            if(mapa[ny][nx]!=='#'){
+                jugador.y=ny; jugador.x=nx;
+                if(jugador.y===salida.y && jugador.x===salida.x){
+                    dibujar();
+                    setTimeout(()=>alert('¡Felicidades, escapaste del laberinto!'),100);
+                }
+            }
+            dibujar();
+        }
+        function nuevoLaberinto() {
+            const tam = document.getElementById('tamano').value;
+            setTamano(tam);
+            generarLaberinto();
+            dibujar();
+        }
+        document.getElementById('tamano').addEventListener('change', nuevoLaberinto);
+        document.addEventListener('keydown',e=>{
+            if(e.key==='w') mover(-1,0);
+            if(e.key==='a') mover(0,-1);
+            if(e.key==='s') mover(1,0);
+            if(e.key==='d') mover(0,1);
+        });
+        generarLaberinto();
+        dibujar();
+    </script>
 </body>
 </html>
